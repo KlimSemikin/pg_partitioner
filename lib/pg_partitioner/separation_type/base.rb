@@ -19,14 +19,20 @@ module PgPartitioner
         custom_indexes = partition_table_indexes.presence
         return unless custom_indexes
 
-        custom_indexes.each { |custom_index| create_custom_index(partition_table_name, custom_index) }
+        custom_indexes.each do |custom_index|
+          if custom_index.is_a?(Hash)
+            create_custom_index(partition_table_name, custom_index[:fields], **custom_index.except(:fields))
+          else
+            create_custom_index(partition_table_name, custom_index)
+          end
+        end
       end
 
       def create_partition_named_indexes(partition_table_name)
         custom_indexes = partition_table_named_indexes.presence
         return unless custom_indexes
 
-        custom_indexes.map do |name, custom_index|
+        custom_indexes.each do |name, custom_index|
           index_name = "index_#{partition_table_name}_#{name}"
           create_custom_named_index(partition_table_name, custom_index, index_name)
         end
@@ -36,16 +42,18 @@ module PgPartitioner
         custom_unique_indexes = partition_table_unique_indexes.presence
         return unless custom_unique_indexes
 
-        custom_unique_indexes.each { |custom_index| create_custom_index(partition_table_name, custom_index, true) }
+        custom_unique_indexes.each do |custom_index|
+          create_custom_index(partition_table_name, custom_index, unique: true)
+        end
       end
 
       def create_partition_named_unique_indexes(partition_table_name)
         custom_indexes = partition_table_named_unique_indexes.presence
         return unless custom_indexes
 
-        custom_indexes.map do |name, custom_index|
+        custom_indexes.each do |name, custom_index|
           index_name = "index_#{partition_table_name}_#{name}"
-          create_custom_named_index(partition_table_name, custom_index, index_name, true)
+          create_custom_named_index(partition_table_name, custom_index, index_name, unique: true)
         end
       end
 

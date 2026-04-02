@@ -53,6 +53,16 @@ class YourModelName < ActiveRecord::Base
   end
 end
 ```
+Alternative usage of `partition_table_indexes` method. You can pass additional params to index creation with this way:
+```ruby
+  def self.partition_table_indexes
+    [
+      { fields: %w(column1 column2) },
+      { fields: %w(column1 column2 column3), name: 'my_index_for_column1_column2', unique: true },
+      { fields: %w(column1), where: 'user_id IS NOT NULL' }
+    ]
+  end
+```
 2) Create migration and add some instructions to it. Generate migration:
 
 ```

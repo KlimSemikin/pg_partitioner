@@ -37,12 +37,12 @@ module PgPartitioner
     connection.execute(sql_string)
   end
 
-  def create_custom_index(table_name, index_fields, is_unique = false)
-    connection.add_index table_name, index_fields, unique: is_unique
+  def create_custom_index(table_name, index_fields, **keys)
+    connection.add_index(table_name, index_fields, **keys)
   end
 
-  def create_custom_named_index(table_name, index_fields, name, is_unique = false)
-    connection.add_index table_name, index_fields, name: name, unique: is_unique
+  def create_custom_named_index(table_name, index_fields, name, **keys)
+    connection.add_index(table_name, index_fields, name: name, **keys)
   end
 
   def disable_autovacuum(table_name)
